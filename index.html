@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="pageTitle">Negotiation DNA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --brand: #264550;
+  --brand-dark: #1a3640;
+  --brand-faint: #F8F7F4;
+  --tint: #d1d3d4;
+  --white: #ffffff;
+  --text-primary: #1a1a1a;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  --text-body: #1a1a1a;
+  --text-heading: #000000;
+  --text-muted: #9ca3af;
+  --bar-track: #e8e5e0;
+  --band-low: #c87533;
+  --band-moderate: #2a7d4f;
+  --band-high: #2663a6;
+  --font-display: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'EB Garamond', Georgia, serif;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 2px 6px rgba(0,0,0,0.08);
+  --shadow-lg: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+html { font-size: 16px; }
+body {
+  background: var(--brand-faint);
+  font-family: var(--font-display);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Utility */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* Wrap */
+.wrap {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* Topbar */
+.topbar {
+  background: var(--white);
+  border-bottom: 3px solid var(--brand);
+  padding: 14px 24px;
+  margin: 0 -24px;
+}
+.topbar-title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.875rem;
+  color: var(--brand);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+/* Progress counter */
+.progress-bar {
+  display: none;
+  background: var(--white);
+  border-bottom: 1px solid var(--tint);
+  margin: 0 -24px;
+  padding: 20px 24px;
+}
+.progress-bar.visible { display: block; }
+.progress-inner {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.progress-number {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 3rem;
+  color: var(--brand);
+  min-width: 96px;
+  text-align: center;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.progress-number .total {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+.progress-right { flex: 1; }
+.progress-dim-label {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.75rem;
+  color: var(--brand);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+.pips {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.pip {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e8e5e0;
+  flex-shrink: 0;
+}
+.pip.done { background: var(--brand); }
+.pip.active {
+  background: var(--brand);
+  box-shadow: 0 0 0 3px rgba(38,69,80,0.25);
+}
+.pip.dim-gap { margin-left: 8px; }
+
+/* Sections */
+.section { display: none; }
+.section.active { display: flex; flex-direction: column; }
+
+/* No-token error */
+#no-token {
+  min-height: calc(100vh - 120px);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px;
+}
+.no-token-message {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.0625rem;
+  color: var(--text-primary);
+  line-height: 1.7;
+  max-width: 440px;
+}
+
+/* Intro */
+#intro {
+  min-height: calc(100vh - 120px);
+}
+.intro-headline {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 2rem;
+  color: #000;
+  line-height: 1.25;
+  margin-bottom: 32px;
+  margin-top: 48px;
+}
+.intro-body {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  color: #1a1a1a;
+  line-height: 1.7;
+  margin-bottom: 48px;
+}
+.intro-meta {
+  background: var(--white);
+  border-left: 3px solid var(--brand);
+  padding: 32px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: #1a1a1a;
+  line-height: 1.8;
+  margin-bottom: 48px;
+  border-radius: 3px;
+}
+.intro-meta p + p { margin-top: 12px; }
+
+/* Instructions block (personal profile) */
+.instructions-block {
+  background: var(--white);
+  border-left: 3px solid var(--brand);
+  padding: 32px;
+  border-radius: 3px;
+  margin-bottom: 48px;
+  margin-top: 32px;
+}
+.instructions-section { margin-bottom: 24px; }
+.instructions-section:last-child { margin-bottom: 0; }
+.instructions-label {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.75rem;
+  color: var(--brand);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+.instructions-text {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  line-height: 1.7;
+}
+.instructions-list {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  line-height: 1.7;
+  padding-left: 20px;
+}
+.instructions-list li { margin-bottom: 6px; }
+.instructions-list li:last-child { margin-bottom: 0; }
+
+/* Response scale preview */
+.scale-preview {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+.scale-preview-label {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+.scale-chip {
+  flex: 1;
+  background: var(--white);
+  border: 1px solid var(--tint);
+  border-radius: 5px;
+  padding: 12px 8px;
+  text-align: center;
+}
+.scale-chip-num {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.375rem;
+  color: var(--brand);
+  display: block;
+  margin-bottom: 4px;
+}
+.scale-chip-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.btn-start {
+  display: block;
+  width: 100%;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  background: var(--brand);
+  color: var(--white);
+  border: none;
+  padding: 18px 24px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: auto;
+  margin-bottom: 32px;
+  transition: background 0.2s;
+}
+.btn-start:hover { background: var(--brand-dark); }
+.btn-start:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* Questions */
+#questions {
+  min-height: calc(100vh - 120px);
+  padding: 48px 0 32px;
+}
+.q-wrap {}
+.q-text {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.375rem;
+  color: #000;
+  line-height: 1.65;
+  margin-bottom: 48px;
+  letter-spacing: -0.01em;
+}
+.q-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.q-options[role="radiogroup"] { outline: none; }
+.q-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+  background: var(--white);
+  border: 2px solid var(--tint);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.q-btn:hover { border-color: rgba(38,69,80,0.4); }
+.q-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.q-btn.selected {
+  background: var(--brand);
+  border-color: var(--brand);
+  box-shadow: var(--shadow-md);
+}
+.q-btn-num {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.25rem;
+  color: var(--brand);
+  width: 32px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.q-btn.selected .q-btn-num { color: var(--white); }
+.q-btn-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+.q-btn.selected .q-btn-label { color: var(--white); }
+
+.q-nav {
+  margin-top: auto;
+  padding-top: 24px;
+}
+.btn-back {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 0;
+}
+.btn-back:hover { color: var(--text-primary); }
+.btn-back:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.btn-back.hidden { visibility: hidden; }
+
+/* Fade animation */
+.fade-in {
+  animation: fadeIn 0.2s ease forwards;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Loading */
+#loading {
+  align-items: center;
+  justify-content: center;
+  padding: 128px 0;
+}
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--tint);
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-bottom: 20px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+}
+
+/* Results */
+#results { padding-bottom: 32px; }
+
+.results-card {
+  background: var(--white);
+  border-radius: 3px;
+  box-shadow: var(--shadow-lg);
+  margin-top: 32px;
+}
+.results-header {
+  padding: 36px 32px 28px;
+  border-bottom: 1px solid var(--tint);
+}
+.results-tool-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.results-headline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--text-heading);
+  line-height: 1.5;
+}
+
+/* Bar chart */
+.chart-section { padding: 28px 32px 32px; }
+.chart-row { margin-bottom: 24px; }
+.chart-row:last-child { margin-bottom: 0; }
+.chart-dim-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.chart-bar-container {
+  height: 32px;
+  position: relative;
+}
+.chart-track {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0; right: 0;
+  height: 16px;
+  background: var(--bar-track);
+  border-radius: 3px;
+}
+.chart-moderate-zone {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 33.33%;
+  right: 33.33%;
+  background: rgba(38,69,80,0.1);
+  border-radius: 3px;
+}
+.chart-center-line {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--tint);
+  z-index: 2;
+}
+.chart-fill {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 16px;
+  background: var(--brand);
+  border-radius: 3px;
+  z-index: 1;
+  transition: left 0.6s ease, width 0.6s ease, opacity 0.6s ease;
+}
+.chart-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  background: var(--brand);
+  border: 2px solid var(--white);
+  border-radius: 50%;
+  z-index: 3;
+  box-shadow: var(--shadow-sm);
+  transition: left 0.6s ease;
+}
+.chart-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+.chart-label {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 0.875rem;
+  color: var(--text-body);
+  max-width: 45%;
+}
+.chart-label-right { text-align: right; }
+
+/* Balanced profile block (H12 only) */
+.balanced-block {
+  display: none;
+  padding: 20px 32px 24px;
+  border-top: 1px solid var(--tint);
+}
+.balanced-block.visible { display: block; }
+.balanced-copy {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 1.0625rem;
+  color: var(--text-body);
+  line-height: 1.7;
+}
+
+/* Dimension summaries */
+.summaries-section { display: none; }
+.summaries-section.visible { display: block; }
+
+.summary-card {
+  border-top: 1px solid var(--tint);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.summary-card.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.summary-header:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
+.summary-header-left {}
+.summary-dim-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  color: #000;
+  margin-bottom: 2px;
+}
+.summary-band-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.summary-band-label.band-low { color: var(--band-low); }
+.summary-band-label.band-moderate { color: var(--band-moderate); }
+.summary-band-label.band-high { color: var(--band-high); }
+.summary-chevron {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+  color: var(--text-secondary);
+}
+.summary-card.expanded .summary-chevron { transform: rotate(180deg); }
+.summary-body {
+  display: none;
+  padding: 0 32px 20px;
+}
+.summary-card.expanded .summary-body { display: block; }
+.summary-copy {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 1.0625rem;
+  color: var(--text-body);
+  line-height: 1.7;
+}
+
+/* Retake */
+.retake-wrap { display: none; margin-top: 16px; text-align: left; }
+.btn-retake {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+}
+.btn-retake:hover { color: var(--text-secondary); }
+.btn-retake:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* Save */
+.save-wrap { margin-top: 16px; text-align: left; }
+.btn-save {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.15s ease;
+}
+.btn-save:hover { color: var(--text-primary); }
+.btn-save:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.save-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 32px 0;
+  border-top: 1px solid var(--tint);
+  margin-top: 16px;
+}
+.footer-copy {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
+}
+
+/* ---- Mobile ---- */
+@media (max-width: 480px) {
+  .wrap { padding: 0 16px; }
+  .topbar {
+    margin: 0 -16px;
+    padding: 12px 16px;
+    font-size: 0.75rem;
+  }
+  .topbar-title { font-size: 0.75rem; }
+  .progress-bar {
+    margin: 0 -16px;
+    padding: 16px;
+  }
+  .progress-inner { gap: 16px; }
+  .progress-number {
+    font-size: 2.25rem;
+    min-width: 76px;
+  }
+  .progress-number .total { font-size: 1rem; }
+  .pip { width: 6px; height: 6px; }
+  .pip.dim-gap { margin-left: 5px; }
+  .intro-headline { font-size: 1.5rem; margin-top: 32px; }
+  .intro-body { font-size: 1rem; }
+  .intro-meta { padding: 24px; margin-bottom: 32px; }
+  .instructions-block { padding: 24px; margin-top: 24px; margin-bottom: 32px; }
+  .instructions-text { font-size: 0.875rem; }
+  .instructions-list { font-size: 0.875rem; }
+  .scale-chip { padding: 10px 4px; }
+  .scale-chip-num { font-size: 1.1rem; }
+  .scale-chip-label { font-size: 0.625rem; }
+  #questions { padding: 32px 0 24px; min-height: 520px; }
+  .q-text { font-size: 1.125rem; margin-bottom: 32px; }
+  .q-options { gap: 12px; }
+  .q-btn { padding: 14px 16px; gap: 12px; }
+  .q-btn-num { font-size: 1.1rem; width: 28px; }
+  .q-btn-label { font-size: 0.9375rem; }
+  .results-header { padding: 28px 20px 24px; }
+  .chart-section { padding: 24px 20px 28px; }
+  .balanced-block { padding: 16px 20px 20px; }
+  .summary-header { padding: 16px 20px; }
+  .summary-body { padding: 0 20px 20px; }
+  .btn-save { font-size: 0.8125rem; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.print-only-footer { display: none; }
+
+/* Print */
+@media print {
+  /* Hide non-content elements */
+  .topbar, .progress-bar, .q-nav, .retake-wrap, .save-wrap, .footer { display: none !important; }
+
+  /* Force results visible */
+  #results { display: block !important; }
+
+  /* White background */
+  body { background: #ffffff !important; }
+  .wrap { padding: 0 24px !important; max-width: 100% !important; }
+
+  /* Clean card */
+  .results-card { box-shadow: none !important; border: none !important; margin-top: 0 !important; }
+
+  /* Header */
+  .results-header { padding: 20px 24px 16px !important; border-bottom: 2px solid #264550 !important; }
+  .results-tool-label { font-size: 0.7rem !important; }
+  .results-headline { font-size: 1.25rem !important; color: #000 !important; }
+
+  /* Chart */
+  .chart-section { padding: 20px 24px 24px !important; }
+  .chart-row { margin-bottom: 20px !important; }
+  .chart-dim-name { font-size: 0.8rem !important; }
+  .chart-label { font-size: 0.75rem !important; }
+  .chart-fill { transition: none !important; }
+  .chart-marker { transition: none !important; }
+
+  /* Balanced block */
+  .balanced-block { padding: 12px 24px 16px !important; }
+  .balanced-block.visible { display: block !important; }
+  .balanced-copy { font-size: 0.9375rem !important; }
+
+  /* Force all summaries open */
+  .summaries-section { display: block !important; }
+  .summary-card { opacity: 1 !important; transform: none !important; border-top: 1px solid #e0e0e0 !important; }
+  .summary-body { display: block !important; }
+  .summary-header { padding: 12px 24px !important; cursor: default !important; }
+  .summary-dim-name { font-size: 0.9375rem !important; }
+  .summary-band-label { font-size: 0.6875rem !important; }
+  .summary-copy { font-size: 0.9375rem !important; line-height: 1.6 !important; }
+  .summary-chevron { display: none !important; }
+
+  /* Print footer: visible only when printing */
+  .print-only-footer {
+    display: block !important;
+    margin-top: 24px;
+    padding-top: 12px;
+    border-top: 1px solid #264550;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.6875rem;
+    color: #9ca3af;
+  }
+
+  /* Page settings */
+  @page {
+    margin: 18mm 15mm;
+    size: A4 portrait;
+  }
+
+  /* Prevent awkward page breaks */
+  .chart-section { page-break-inside: avoid; }
+  .summary-card { page-break-inside: avoid; }
+  .results-header { page-break-after: avoid; }
+}
+
+/* Language toggle */
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  user-select: none;
+}
+.lang-btn {
+  background: none;
+  border: none;
+  padding: 4px 6px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border-radius: 3px;
+}
+.lang-btn:hover { color: var(--text-primary); }
+.lang-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.lang-btn.lang-active { color: var(--brand); font-weight: 900; }
+.lang-sep { color: var(--text-tertiary); }
+
+/* Print: hide language toggle */
+@media print {
+  .lang-toggle { display: none !important; }
+}
+
+/* Mobile tweaks */
+@media (max-width: 480px) {
+  .topbar { gap: 8px; }
+  .lang-toggle { font-size: 0.75rem; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-title" data-i18n="topbar">Negotiation DNA</div>
+    <div class="lang-toggle" role="group" aria-label="Language">
+      <button type="button" class="lang-btn lang-active" id="langEn" aria-pressed="true">EN</button>
+      <span class="lang-sep" aria-hidden="true">|</span>
+      <button type="button" class="lang-btn" id="langTc" aria-pressed="false">中文</button>
+    </div>
+  </div>
+
+  <!-- Progress counter -->
+  <div class="progress-bar" id="progressBar">
+    <div class="progress-inner">
+      <div class="progress-number" id="progressNum">1 <span class="total">/35</span></div>
+      <div class="progress-right">
+        <div class="progress-dim-label" id="progressDimLabel">Preparation Orientation</div>
+        <div class="pips" id="pipsContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No token error -->
+  <div class="section" id="no-token">
+    <p class="no-token-message" data-i18n="noToken"></p>
+  </div>
+
+  <!-- Intro -->
+  <div class="section" id="intro">
+    <h1 class="intro-headline" data-i18n="introHeadline"></h1>
+
+    <div class="instructions-block">
+      <div class="instructions-section">
+        <div class="instructions-label" data-i18n="instrLabelAbout"></div>
+        <p class="instructions-text" data-i18n="instrAbout"></p>
+      </div>
+
+      <div class="instructions-section">
+        <div class="instructions-label" data-i18n="instrLabelWhatCounts"></div>
+        <p class="instructions-text" data-i18n="instrWhatCounts"></p>
+      </div>
+
+      <div class="instructions-section">
+        <div class="instructions-label" data-i18n="instrLabelHowToAnswer"></div>
+        <ul class="instructions-list">
+          <li data-i18n="instrHowAnswer1"></li>
+          <li data-i18n="instrHowAnswer2"></li>
+          <li data-i18n="instrHowAnswer3"></li>
+        </ul>
+      </div>
+
+      <div class="instructions-section">
+        <div class="instructions-label" data-i18n="instrLabelScale"></div>
+        <ul class="instructions-list">
+          <li data-i18n-html="instrScaleNever"></li>
+          <li data-i18n-html="instrScaleRarely"></li>
+          <li data-i18n-html="instrScaleOften"></li>
+          <li data-i18n-html="instrScaleConsistently"></li>
+        </ul>
+      </div>
+
+      <div class="instructions-section">
+        <div class="instructions-label" data-i18n="instrLabelConfidentiality"></div>
+        <p class="instructions-text" data-i18n="instrConfidentiality"></p>
+      </div>
+
+      <div class="instructions-section">
+        <div class="instructions-label" data-i18n="instrLabelTime"></div>
+        <p class="instructions-text" data-i18n="instrTime"></p>
+      </div>
+    </div>
+
+    <div>
+      <div class="scale-preview-label" data-i18n="scaleHeader"></div>
+      <div class="scale-preview">
+        <div class="scale-chip"><span class="scale-chip-num">1</span><span class="scale-chip-label" data-i18n="scale1"></span></div>
+        <div class="scale-chip"><span class="scale-chip-num">2</span><span class="scale-chip-label" data-i18n="scale2"></span></div>
+        <div class="scale-chip"><span class="scale-chip-num">3</span><span class="scale-chip-label" data-i18n="scale3"></span></div>
+        <div class="scale-chip"><span class="scale-chip-num">4</span><span class="scale-chip-label" data-i18n="scale4"></span></div>
+      </div>
+    </div>
+
+    <button class="btn-start" id="btnStart" data-i18n="beginBtn"></button>
+  </div>
+
+  <!-- Questions -->
+  <div class="section" id="questions">
+    <div class="q-wrap" id="qWrap">
+      <div class="q-text" id="qText"></div>
+      <div class="q-options" id="qOptions" role="radiogroup" aria-label="Select your response"></div>
+    </div>
+    <div class="q-nav">
+      <button class="btn-back hidden" id="btnBack" aria-label="Previous question">&larr; <span data-i18n="backBtn"></span></button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="section" id="loading">
+    <div class="spinner" role="status"><span class="sr-only" data-i18n="loading"></span></div>
+    <div class="loading-text" data-i18n="loading"></div>
+  </div>
+
+  <!-- Results -->
+  <div class="section" id="results">
+    <div class="results-card">
+      <div class="results-header">
+        <div class="results-tool-label" id="resultsToolLabel"></div>
+        <div class="results-headline" id="resultsHeadline"></div>
+      </div>
+
+      <div class="chart-section" id="chartSection"></div>
+
+      <div class="balanced-block" id="balancedBlock">
+        <p class="balanced-copy" data-i18n="balancedBlock"></p>
+      </div>
+
+      <div class="summaries-section" id="summariesSection"></div>
+    </div>
+
+    <div class="retake-wrap">
+      <button class="btn-retake" id="btnRetake" data-i18n="retakeBtn"></button>
+    </div>
+
+    <div class="save-wrap">
+      <button class="btn-save" id="btnSave">
+        <svg class="save-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        <span data-i18n="saveBtn"></span>
+      </button>
+    </div>
+
+    <div class="footer">
+      <div class="footer-copy">&copy; 2026 Arete Advisors. <span data-i18n="footerDisclaimer"></span></div>
+    </div>
+
+    <div class="print-only-footer" aria-hidden="true">&copy; 2026 Arete Advisors. <span data-i18n="footerDisclaimer"></span></div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  var WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwniIzCVY7Z1kRHux4obHyDaIw0m3J2O29LYZY2R0LLb5J3VWYwbAKINzUGs4NrMSc/exec';
+
+  var token = new URLSearchParams(window.location.search).get('t');
+
+  // TOOL_NAME is computed via STRINGS.topbar so it follows the toggle.
+  function getToolName() { return S('topbar'); }
+
+  // ---- STRINGS (bilingual) ----
+
+  var lang = 'en';
+
+  var STRINGS = {
+    pageTitle: { en: "Negotiation DNA - Personal Profile", tc: "Negotiation DNA — 個人檔案" },
+    topbar: { en: "Negotiation DNA - Personal Profile", tc: "Negotiation DNA — 個人檔案" },
+    noToken: { en: "This assessment requires a valid link. If you received one, check that the full URL was copied. Otherwise, contact your administrator at connect@areteadvisors.pro.", tc: "此評估需要有效的連結。如您已收到連結，請確認已完整複製整個網址。如未收到，請聯絡您的管理員, connect@areteadvisors.pro。" },
+    loading: { en: "Building your profile", tc: "正在建立您的檔案" },
+    saveBtn: { en: "Save your profile", tc: "儲存您的檔案" },
+    retakeBtn: { en: "Retake assessment", tc: "重新評估" },
+    beginBtn: { en: "Begin Assessment", tc: "開始評估" },
+    backBtn: { en: "Previous", tc: "上一題" },
+    footerDisclaimer: { en: "Assessment reflects self-reported perceptions.", tc: "評估結果反映受訪者所匯報的觀感。" },
+    instrLabelAbout: { en: "About this diagnostic", tc: "關於本評估" },
+    instrLabelWhatCounts: { en: "What counts as a commercial discussion", tc: "什麼算是商務磋商" },
+    instrLabelHowToAnswer: { en: "How to answer", tc: "如何作答" },
+    instrLabelScale: { en: "Response scale", tc: "回應量表" },
+    instrLabelConfidentiality: { en: "Confidentiality", tc: "保密" },
+    instrLabelTime: { en: "Time", tc: "所需時間" },
+    ariaLanguage: { en: "Language", tc: "語言" },
+    ariaSelectResponse: { en: "Select your response", tc: "選擇您的答案" },
+    ariaPrevious: { en: "Previous question", tc: "上一題" },
+    introHeadline: { en: "What are your negotiation patterns?", tc: "您的談判模式是什麼？" },
+    instrAbout: { en: "This instrument measures your negotiation tendencies: how you typically approach commercial discussions. There are no right or wrong answers. Every approach has strengths and limitations.", tc: "本工具評估您的談判傾向：您通常如何進行商務磋商。答案無分對錯，每種方式都有其優勢與局限。" },
+    instrWhatCounts: { en: "These questions apply to any discussion where you need to reach agreement with someone whose interests or priorities may differ from yours. This includes conversations with customers, suppliers, internal colleagues, cross-functional partners, or anyone where you are navigating competing priorities to reach a shared outcome.", tc: "這些問題適用於任何您需要與對方達成共識的討論，而對方的利益或優先考慮的因素可能跟您的有所不同。這包括與客戶、供應商、內部同事、跨部門夥伴，或任何需要在不同優先考慮之間協調以達成共同結果的對話。" },
+    instrHowAnswer1: { en: "Answer based on what you actually do, not what your role requires or what your organization expects.", tc: "請根據您的實際行為作答，而非您的職位要求或公司期望。" },
+    instrHowAnswer2: { en: "Think about your general tendency across discussions, not one specific situation.", tc: "請考慮您在各種討論中的整體傾向，而非某一特定情境。" },
+    instrHowAnswer3: { en: "If the situation described has not occurred, answer based on what you would most likely do.", tc: "如您未曾遇到所述情境，請根據您最可能的做法作答。" },
+    instrScaleNever: { en: "Never: You cannot recall behaving this way.", tc: "從不：您不記得自己曾經這樣做過。" },
+    instrScaleRarely: { en: "Rarely: This happens occasionally but is not typical for you.", tc: "甚少：偶有發生，但並非您的典型做法。" },
+    instrScaleOften: { en: "Often: This is a common pattern for you in most situations.", tc: "經常：在大多數情境中，這是您常用的模式。" },
+    instrScaleConsistently: { en: "Consistently: This is your default approach.", tc: "一貫：這是您的慣常做法。" },
+    instrConfidentiality: { en: "Your individual responses are confidential. Results will only be presented at a group level. No individual profiles will be shared in any group setting.", tc: "您的個人回覆將予保密。結果僅以群組層面呈報，個人檔案不會在任何群組場合中分享。" },
+    instrTime: { en: "Under 10 minutes.", tc: "少於10分鐘。" },
+    scale1: { en: "Never", tc: "從不" },
+    scale2: { en: "Rarely", tc: "甚少" },
+    scale3: { en: "Often", tc: "經常" },
+    scale4: { en: "Consistently", tc: "一貫做法" },
+    scaleHeader: { en: "Response Scale", tc: "回應量表" },
+    d1Name: { en: "Preparation Orientation", tc: "準備取向" },
+    d1Left: { en: "Intuitive / Adaptive", tc: "直覺型 / 適應型" },
+    d1Right: { en: "Systematic / Structured", tc: "系統型 / 結構型" },
+    d2Name: { en: "Value Orientation", tc: "價值取向" },
+    d2Left: { en: "Claims Value", tc: "爭取價值" },
+    d2Right: { en: "Creates Value", tc: "創造價值" },
+    d3Name: { en: "Pressure Response", tc: "受壓回應" },
+    d3Left: { en: "Accommodates Under Pressure", tc: "面對壓力時迎合對方" },
+    d3Right: { en: "Resists Under Pressure", tc: "受壓時抗衡" },
+    d4Name: { en: "Concession Discipline", tc: "讓步紀律" },
+    d4Left: { en: "Gives Ground Freely", tc: "樂意讓步" },
+    d4Right: { en: "Holds Ground Firmly", tc: "堅持立場" },
+    d5Name: { en: "Stakeholder Calibration", tc: "持份者協調" },
+    d5Left: { en: "Closes First, Aligns After", tc: "先達成，後協調" },
+    d5Right: { en: "Aligns First, Closes After", tc: "先協調，後達成" },
+    bandLow: { en: "LOW", tc: "低" },
+    bandModerate: { en: "MODERATE", tc: "中" },
+    bandHigh: { en: "HIGH", tc: "高" },
+    item_1_1: { en: "Before a significant commercial discussion, I develop a written analysis of the other party's likely priorities, constraints, and alternatives.", tc: "在進行重要的商務磋商之前，我會撰寫書面分析，評估對方可能的優先考慮、限制條件和替代方案。" },
+    item_2_1: { en: "When discussions reach an impasse on a key term, I shift to exploring other issues where both parties might find value.", tc: "當討論在某一關鍵條款上陷入僵局時，我會轉向探索其他可能讓雙方找到價值的議題。" },
+    item_3_1: { en: "When the other party issues a take-it-or-leave-it demand, I hold my position rather than offering a concession to keep things moving.", tc: "當對方提出非此即彼的要求時，我會堅守立場，而非作出讓步以推動進展。" },
+    item_4_1: { en: "When I make a concession, I explicitly state what I expect in return before finalizing it.", tc: "當我作出讓步時，我會在定案前明確說明期望對方給予什麼回報。" },
+    item_5_1: { en: "Before making commitments to the other party, I check with internal colleagues to confirm I have support for the terms I'm considering.", tc: "在向對方作出承諾之前，我會與內部同事確認，確保我正在考慮的條款獲得支持。" },
+    item_1_2: { en: "When preparation time is limited, I rely on my read of the situation and past experience rather than conducting structured research on the other party.", tc: "當準備時間有限時，我依靠自己對情勢的判斷和過往經驗，而非對對方進行結構化的研究。" },
+    item_2_2: { en: "In commercial discussions, I spend more time advocating for my position than asking questions about what the other party is trying to achieve.", tc: "在商務磋商中，我花在闡述自己的立場的時間，比詢問對方希望達成什麼為多。" },
+    item_3_2: { en: "When a high-stakes discussion becomes heated and the relationship feels at risk, I soften my position on key issues to protect the relationship.", tc: "當一場高風險的討論變得激烈，關係面臨風險時，我會在關鍵議題上軟化立場以維護關係。" },
+    item_4_2: { en: "When a discussion loses momentum, I offer a concession to get things moving again, even if the other party hasn't made a comparable move.", tc: "當討論失去推進力時，即使對方未作出相應讓步，我也會主動讓步以重新推動進展。" },
+    item_5_2: { en: "I commit to terms with the other party before confirming that internal stakeholders will support them.", tc: "我會在未確認得到內部持份者是否支持條款之前，先向對方承諾條款。" },
+    item_1_3: { en: "I test my assumptions about the other party's priorities by seeking information from multiple sources before engaging with them directly.", tc: "在直接與對方接觸之前，我會從多個來源蒐集資訊，驗證自己對對方的優先考慮的假設。" },
+    item_2_3: { en: "I invest time understanding what the other party values most, even when it goes beyond the specific terms we're discussing.", tc: "我會花時間了解對方最重視什麼，即使這超出了我們正在討論的具體條款。" },
+    item_3_3: { en: "When someone applies time pressure to force a quick decision, I slow the process down rather than accelerating to meet their timeline.", tc: "當有人施加時間壓力迫使快速決定時，我會放慢節奏，而非加快配合對方的時間表。" },
+    item_4_3: { en: "I plan the sequence and size of my concessions in advance, so I know what I'm willing to move on and in what order.", tc: "我會預先規劃讓步的順序和幅度，清楚知道自己願意在哪些方面讓步及其先後次序。" },
+    item_5_3: { en: "I pause or slow external discussions to make sure internal colleagues are aligned on the direction before I proceed.", tc: "我會暫停或放慢對外的磋商，確保內部同事在方向上達成一致後再繼續推進。" },
+    item_1_4: { en: "I arrive at important discussions with a specific plan for the sequence of issues I intend to raise and the order in which I'll address them.", tc: "在參與重要討論時，我帶備具體計劃，列明打算提出的議題順序及處理次序。" },
+    item_2_4: { en: "Once I've secured the terms I came for, I move to close the discussion rather than exploring whether additional value is available.", tc: "一旦取得了我預期的條款，我便會推動結束磋商，而非探索是否還有額外價值可供發掘。" },
+    item_3_4: { en: "When the other party expresses frustration or signals they may walk away, I adjust my approach to reduce the tension, even if it means giving ground on substance.", tc: "當對方表達不滿或暗示可能退出時，我會調整方式以緩和緊張局面，意味着在議題上讓步。" },
+    item_4_4: { en: "I offer concessions to build goodwill or trust without tying them explicitly to something I need in return.", tc: "我會作出讓步以建立良好關係或信任；而不明確要求對方給予回報。" },
+    item_5_4: { en: "I adjust the terms I'm pursuing in real time based on what the other party signals, without checking with internal colleagues first.", tc: "我會於未與內部同事確認之前，根據對方的訊號即時調整我所追求的條款。" },
+    item_1_5: { en: "I enter important discussions with a clear sense of what I want to achieve but without a detailed plan for how the conversation should unfold.", tc: "我帶着明確的目標進入重要討論，但沒有詳細規劃應如何展開及推進討論。" },
+    item_2_5: { en: "I propose options that give the other party something they value in exchange for something I need, rather than splitting differences on the contested terms.", tc: "我會提出方案，以對方所重視的東西換取我所需要的，而非在爭議條款上折中妥協。" },
+    item_3_5: { en: "When the other party walks away from discussions, I wait for them to return rather than reaching out with an improved offer.", tc: "當對方退出討論時，我會等待他們回來，而非主動提出更佳的方案。" },
+    item_4_5: { en: "I keep a running account of concessions made by both sides during a discussion and raise it when the balance becomes lopsided.", tc: "我會持續記錄雙方於討論過程中所作過的讓步，並在失衡時提出。" },
+    item_5_5: { en: "I invest as much time preparing internal stakeholders for potential outcomes as I do preparing for the discussion with the other party.", tc: "我花在協助內部持份者做好應對各種可能結果的準備上，與花在準備與外方進行討論的時間一樣多。" },
+    item_1_6: { en: "I define specific numerical targets and walk-away thresholds before entering any significant commercial conversation.", tc: "在進行任何重要的商務磋商之前，我會訂定具體的數字目標和退出底線。" },
+    item_2_6: { en: "I look for terms outside the original scope that could make an agreement more valuable to both parties.", tc: "我會尋找原有範圍以外的條款，以提升協議對雙方的價值。" },
+    item_3_6: { en: "When the other party threatens consequences for not agreeing quickly, I test whether the threat is real before changing course.", tc: "當對方以不迅速達成協議會帶來的後果相威脅時，我會先驗證威脅是否屬實，然後才考慮改變方向。" },
+    item_4_6: { en: "I make each successive concession smaller than the previous one to signal that I am approaching my limit.", tc: "我會使每一次讓步的幅度比上一次的更小，以表明我正接近底線。" },
+    item_5_6: { en: "I identify every person who could block or alter the final agreement and engage them before making commitments.", tc: "我會識別每一位可能阻撓或改動最終協議的人，並在作出承諾之前與他們溝通。" },
+    item_1_7: { en: "I prepare for commercial discussions by thinking through scenarios rather than producing written analysis or research.", tc: "我為商務磋商所做的準備，是在腦中推演不同情境，而非撰寫書面分析或進行研究。" },
+    item_2_7: { en: "When the other party proposes a term, I respond by explaining what does not work for my side rather than asking what makes that term important to them.", tc: "當對方提出某一條款時，我的回應是解釋為何該條款對我方不可行，而非詢問為何該條款對他們重要。" },
+    item_3_7: { en: "When I sense rising tension in a discussion, I move toward agreement faster than I originally planned.", tc: "當我感覺到討論中的緊張氣氛升溫時，我會比原計劃更快地推向達成協議。" },
+    item_4_7: { en: "I sometimes concede on multiple issues at once to resolve a complex discussion more quickly.", tc: "我有時會同時在多個議題上讓步，以更快地解決複雜的討論。" },
+    item_5_7: { en: "I move discussions forward based on my own authority rather than confirming decision rights with my internal team.", tc: "我依靠自己的權限推進討論，而非先與內部團隊確認決策權。" },
+    h01: { en: "Your concession patterns may be training counterparties to apply pressure rather than trade with you.", tc: "您的讓步模式可能正在訓練對方向您施壓，而非與您進行交易。" },
+    h02: { en: "Your thorough preparation and firmness under pressure may limit your ability to respond when discussions take an unexpected turn.", tc: "您的充分準備和受壓時的堅持，可能限制了您在討論出現預期以外的轉折時的應變。" },
+    h03: { en: "You invest in expanding what's available but your concession patterns suggest you give away more than you get in return.", tc: "您致力擴大可用的價值空間，但您的讓步模式顯示您付出的比回報多。" },
+    h04: { en: "Entering discussions without thorough preparation and then giving ground under pressure compounds the value gap on both sides.", tc: "在準備不足的情況下進入討論，繼而在壓力下讓步，會令雙方所得的價值有嚴重的落差。" },
+    h05: { en: "Your firmness under pressure and reluctance to concede may be creating deadlocks that cost more than the concessions would.", tc: "您在壓力下的堅持和不願讓步，可能正在造成僵局，其代價有可能超過讓步本身。" },
+    h06: { en: "You focus on securing your share and hold firm under pressure, which protects your position but may close off opportunities that required more flexibility to reach.", tc: "您專注於確保己方利益並在壓力下堅守立場，這保護了您的定位，但可能錯過了需要更大靈活性才能達成的機會。" },
+    h07: { en: "You invest in expanding what's possible but tend to give ground when the other party pushes back, which can undo the value you've worked to create.", tc: "您致力於拓展各種可能性，但在對方施壓時傾向讓步，這可能會抵銷您之前努力創造的價值。" },
+    h08: { en: "You close deals effectively but may underinvest in the internal alignment needed to make those agreements survive implementation.", tc: "您能有效地達成交易，但可能在內部協調上投入不足, 有機會影響協議的順利執行。" },
+    h09: { en: "Your focus on internal alignment combined with a value-claiming orientation may make you appear cautious and difficult to do business with.", tc: "您對內部協調的重視加上偏向爭取價值的取向，可能使您顯得謹慎且難以合作。" },
+    h10: { en: "Your instinct to create value would produce stronger results with more structured preparation on what the other party actually needs.", tc: "您創造價值的本能若配合更有結構的準備工作，深入了解對方的實際需求，將會產生更佳的成果。" },
+    h11: { en: "You prepare thoroughly but your behavior shifts under pressure in ways that can undo your preparation.", tc: "您準備充分，但在壓力下的行為改變可能會抵銷您的準備功夫。" },
+    h12: { en: "Your profile shows relative balance across commercial behaviors. The risk for balanced profiles is inconsistency: look for the specific situations where your balance breaks down.", tc: "您的檔案顯示商務行為相對均衡。均衡檔案的風險在於不一致：留意您在哪些特定情境中失去平衡。" },
+    balancedBlock: { en: "No single dimension dominates your profile. That can mean genuine versatility, or it can mean your patterns shift depending on the situation, the stakes, or who you are dealing with. The question worth sitting with: do you choose when to flex, or does the situation choose for you?", tc: "沒有單一維度主導您的檔案。這可能意味着真正的多變能力，也可能意味着您的模式會因情境、利害關係或對象而變化。值得深思的問題是：是您選擇何時調整，還是情境替您做了選擇？" },
+    d1Low: { en: "Your preparation patterns lean toward experience and instinct rather than structured counterparty analysis. This gives you flexibility and speed, but it may mean you're entering discussions without a clear picture of the other party's constraints. The commercial cost: proposals they can't accept, cycles wasted on dead-end positions, and concessions on issues that didn't need to move.", tc: "您的準備模式傾向依靠經驗和直覺，而非結構化的對方分析。這賦予您靈活性和速度，但可能意味着您在進入討論時對對方的限制條件缺乏清晰認識。商業代價包括：提出對方無法接受的方案、在僵局上浪費 / 虛耗時間，以及在不需要讓步的議題上作出讓步。" },
+    d1Moderate: { en: "You balance preparation with adaptability. You invest in understanding the other party while remaining responsive to what emerges in the room. The question worth asking: does this balance hold when time is short or when the stakes are highest?", tc: "您在準備與應變之間取得平衡。您投入精力了解對方，同時保持對現場情況的敏銳回應。值得追問的是：當時間緊迫或利害關係達到頂點時，這種平衡是否仍能維持？" },
+    d1High: { en: "You invest heavily in structured preparation. This gives you a strong foundation, but it may make you less responsive when the discussion reveals information your preparation didn't anticipate. Counterparties may experience you as scripted or rigid, particularly when they introduce issues or proposals outside the scope of what you prepared for.", tc: "您大量投入結構化準備。這為您提供了堅實的基礎，但可能使您在討論揭示出準備未預料到的資訊時反應較慢。對方可能覺得您給官方答案或僵化，尤其當他們提出超出您準備範圍的議題或方案時。" },
+    d2Low: { en: "Your approach focuses primarily on securing value for your side. This directness can be effective in simple transactions, but it may cause you to miss opportunities where both parties could have gained more. Over time, consistently zero-sum behavior trains counterparties to respond in kind, narrowing the space for creative outcomes.", tc: "您的方式主要聚焦於為己方爭取價值。這種直接的做法在簡單交易中可以奏效，但可能令您錯過雙方本可獲益更多的機會。長此以往，持續的零和行為會訓練對方以同樣方式回應，縮小了創造性成果的潛在空間。" },
+    d2Moderate: { en: "You show a working mix of value-creating and value-claiming behaviors. You explore expansion opportunities while also attending to your own outcomes. Watch for whether you shift toward claiming too early when discussions become contentious or time-pressured.", tc: "您展現出創造價值和爭取價值行為的有效結合。您在探索擴大價值機會的同時也關注自身成果。需要留意的是：當討論變得激烈或時間緊迫時，您是否過早轉向爭取模式。" },
+    d2High: { en: "You invest significant energy in finding ways to expand what's available. This can unlock outcomes neither party anticipated, but it may leave you exposed to counterparties who are focused on claiming. The risk: your collaborative instincts get read as willingness to give, and the value you create gets captured by the other side.", tc: "您投入大量精力尋找擴大可用價值的方式。這可以開啟雙方都未預料的成果，但可能使您在面對專注於爭取的對方時處於弱勢。風險在於：您的合作本能被解讀為願意讓步，而您創造的價值被對方所攫取。" },
+    d3Low: { en: "Under pressure, your behavioral patterns shift toward concession-making and relationship preservation at the expense of your substantive position. This pattern is predictable. Experienced counterparties learn that applying pressure (time constraints, emotional intensity, walkaway signals) produces movement from you. The concessions made under pressure are typically larger and less strategic than those you'd make under calmer conditions.", tc: "在壓力下，您的行為模式傾向於讓步和維護關係，犧牲您本身的立場。這種模式是可預測的。有經驗的對方會發現，施加壓力（時間限制、情緒強度、退出信號）能令您作出讓步。在壓力下作出的讓步通常比在平靜的環境下的讓步更大、更缺乏策略性。" },
+    d3Moderate: { en: "You generally hold your position under pressure while staying open to genuine shifts in the situation. The critical question: can you tell the difference between manufactured pressure designed to extract concessions and real changes in circumstances that warrant flexibility?", tc: "您通常能在壓力下堅守立場，同時對情況的真正變化保持開放。關鍵問題是：您能否分辨出旨在逼取讓步的人為壓力，與確實需要靈活應對的真實情況變化之間的差異？" },
+    d3High: { en: "Under pressure, you hold firm or push back. This prevents pressure-induced concessions, but it can create unnecessary deadlocks and damage relationships that matter for long-term outcomes. Counterparties may stop engaging with you on substance because they see you as immovable, or they may escalate in response to your firmness.", tc: "在壓力下，您會堅守立場或予以回擊。這能防止因壓力而作出讓步，但可能造成不必要的僵局，並損害對長遠成果至關重要的關係。對方可能因視您為不可動搖而停止就實質問題與您交涉，或因您的堅持而升級對抗。" },
+    d4Low: { en: "Your concession patterns suggest you give ground without sufficient reciprocation. This can train counterparties to keep pushing rather than trading, because experience teaches them that waiting or applying pressure produces unilateral movement from you. The commercial cost compounds: counterparties anchor their expectations to your willingness to move first and move alone.", tc: "您的讓步模式顯示您在未獲得充分對等回報的情況下讓步。這會訓練對方不斷施壓而非交換，因為經驗告訴他們，等待或施壓會令您單方面讓步。這種讓步模式會讓商業代價不斷加重：對方會將期望錨定在您願意率先而且獨自讓步的傾向上。" },
+    d4Moderate: { en: "You manage concessions with reasonable discipline, generally linking what you give to what you get. Look for the specific situations where this discipline breaks down. Common triggers: time pressure, high-value relationships, pressure to close, or when you're the one who needs the deal more.", tc: "您會作出合理和有紀律的讓步，通常能將所給的與所獲得的掛鈎。需要留意這種紀律在哪些特定情境下會崩潰。常見觸發因素包括：時間壓力、高價值關係、結案壓力，或當您比對方更需要這筆交易時。" },
+    d4High: { en: "You manage concessions tightly, consistently conditioning what you give on what you receive. This protects value, but it can also create friction and slow progress. There are situations where a well-placed unreciprocated concession would unlock more value than it costs, and your discipline may be preventing you from making those moves.", tc: "您嚴謹地讓步，往往能按您會獲得的去決定給予多少讓步。這保護了價值，但也可能產生摩擦和拖慢進展。在某些情況下，一個恰當的無條件讓步能釋放超過其成本的價值，而您的紀律可能正阻礙您作出這類舉措。" },
+    d5Low: { en: "Your energy goes primarily toward the party across the table. You may be underinvesting in internal alignment, which can produce agreements that look strong but fail during implementation. When internal stakeholders encounter terms they weren't consulted on, the rework, pushback, and political fallout often cost more than the value the original agreement created.", tc: "您的精力主要投放在談判桌對面的一方。您可能在內部協調上投入不足，導致達成的協議看似穩妥卻在執行時失敗。內部持份者未被諮詢有關的條款細節，可能衍生的工作量、阻力和內部政治後果，往往超過原協議所創造的價值。" },
+    d5Moderate: { en: "You balance external deal dynamics with internal stakeholder management. You generally ensure you have support for the commitments you're making. Watch for situations where this balance slips: when pressure to close is high, when the deal feels too good to pause for internal consultation, or when internal politics feel like they're slowing you down.", tc: "您在對外交易動態與內部持份者管理之間取得平衡。您通常確保所作的承諾獲得支持。需要留意平衡失守的情境: 當達成協議的壓力很大時、當交易看似好得不值得暫停進行內部諮詢時，或當您感覺被內部政治拖慢時。" },
+    d5High: { en: "You invest heavily in internal alignment before and during commercial discussions. This reduces implementation risk, but it may also make you slow, conservative, or overly constrained in what you can propose. Counterparties may find you difficult to deal with if every discussion requires internal consultation before progress can be made, and your internal focus may become a way to avoid the discomfort of external confrontation.", tc: "您在商務磋商之前和期間大量投入於內部協調。這降低了執行風險，但也可能令您行動遲緩、過於保守，或在提案上受到過多制約。如果每次討論都需要先進行內部諮詢才能推進，對方可能覺得您難以合作；而您對內部的專注, 也可能成為迴避與外方對峙的方式。" }
+  };
+
+  function S(key) {
+    var entry = STRINGS[key];
+    if (!entry) return '';
+    return (entry[lang] != null ? entry[lang] : entry.en) || '';
+  }
+
+  // ---- DATA (35-item full bank) ----
+
+  var ITEMS = [
+    { id: "1.1", dim: "D1", key: "item_1_1" },
+    { id: "2.1", dim: "D2", key: "item_2_1" },
+    { id: "3.1", dim: "D3", key: "item_3_1" },
+    { id: "4.1", dim: "D4", key: "item_4_1" },
+    { id: "5.1", dim: "D5", key: "item_5_1" },
+    { id: "1.2", dim: "D1", key: "item_1_2" },
+    { id: "2.2", dim: "D2", key: "item_2_2" },
+    { id: "3.2", dim: "D3", key: "item_3_2" },
+    { id: "4.2", dim: "D4", key: "item_4_2" },
+    { id: "5.2", dim: "D5", key: "item_5_2" },
+    { id: "1.3", dim: "D1", key: "item_1_3" },
+    { id: "2.3", dim: "D2", key: "item_2_3" },
+    { id: "3.3", dim: "D3", key: "item_3_3" },
+    { id: "4.3", dim: "D4", key: "item_4_3" },
+    { id: "5.3", dim: "D5", key: "item_5_3" },
+    { id: "1.4", dim: "D1", key: "item_1_4" },
+    { id: "2.4", dim: "D2", key: "item_2_4" },
+    { id: "3.4", dim: "D3", key: "item_3_4" },
+    { id: "4.4", dim: "D4", key: "item_4_4" },
+    { id: "5.4", dim: "D5", key: "item_5_4" },
+    { id: "1.5", dim: "D1", key: "item_1_5" },
+    { id: "2.5", dim: "D2", key: "item_2_5" },
+    { id: "3.5", dim: "D3", key: "item_3_5" },
+    { id: "4.5", dim: "D4", key: "item_4_5" },
+    { id: "5.5", dim: "D5", key: "item_5_5" },
+    { id: "1.6", dim: "D1", key: "item_1_6" },
+    { id: "2.6", dim: "D2", key: "item_2_6" },
+    { id: "3.6", dim: "D3", key: "item_3_6" },
+    { id: "4.6", dim: "D4", key: "item_4_6" },
+    { id: "5.6", dim: "D5", key: "item_5_6" },
+    { id: "1.7", dim: "D1", key: "item_1_7" },
+    { id: "2.7", dim: "D2", key: "item_2_7" },
+    { id: "3.7", dim: "D3", key: "item_3_7" },
+    { id: "4.7", dim: "D4", key: "item_4_7" },
+    { id: "5.7", dim: "D5", key: "item_5_7" }
+  ];
+
+  var DIMENSIONS = {
+    D1: { id: 'D1', nameKey: 'd1Name', leftKey: 'd1Left', rightKey: 'd1Right', items: ['1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7'] },
+    D2: { id: 'D2', nameKey: 'd2Name', leftKey: 'd2Left', rightKey: 'd2Right', items: ['2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7'] },
+    D3: { id: 'D3', nameKey: 'd3Name', leftKey: 'd3Left', rightKey: 'd3Right', items: ['3.1', '3.2', '3.3', '3.4', '3.5', '3.6', '3.7'] },
+    D4: { id: 'D4', nameKey: 'd4Name', leftKey: 'd4Left', rightKey: 'd4Right', items: ['4.1', '4.2', '4.3', '4.4', '4.5', '4.6', '4.7'] },
+    D5: { id: 'D5', nameKey: 'd5Name', leftKey: 'd5Left', rightKey: 'd5Right', items: ['5.1', '5.2', '5.3', '5.4', '5.5', '5.6', '5.7'] }
+  };
+
+  var REVERSE_ITEMS = ['1.2', '2.2', '3.2', '4.2', '5.2', '2.4', '3.4', '4.4', '5.4', '1.5', '1.7', '2.7', '3.7', '4.7', '5.7'];
+
+  var HEADLINES = {
+    H01: 'h01',
+    H02: 'h02',
+    H03: 'h03',
+    H04: 'h04',
+    H05: 'h05',
+    H06: 'h06',
+    H07: 'h07',
+    H08: 'h08',
+    H09: 'h09',
+    H10: 'h10',
+    H11: 'h11',
+    H12: 'h12'
+  };
+
+  var SUMMARIES = {
+    D1: { LOW: 'd1Low', MODERATE: 'd1Moderate', HIGH: 'd1High' },
+    D2: { LOW: 'd2Low', MODERATE: 'd2Moderate', HIGH: 'd2High' },
+    D3: { LOW: 'd3Low', MODERATE: 'd3Moderate', HIGH: 'd3High' },
+    D4: { LOW: 'd4Low', MODERATE: 'd4Moderate', HIGH: 'd4High' },
+    D5: { LOW: 'd5Low', MODERATE: 'd5Moderate', HIGH: 'd5High' }
+  };
+
+  var RESPONSE_OPTIONS = [
+    { value: 1, key: 'scale1' },
+    { value: 2, key: 'scale2' },
+    { value: 3, key: 'scale3' },
+    { value: 4, key: 'scale4' }
+  ];
+
+  var DIM_ORDER = ['D1', 'D2', 'D3', 'D4', 'D5'];
+  var DIM_NAMES = { D1: 'd1Name', D2: 'd2Name', D3: 'd3Name', D4: 'd4Name', D5: 'd5Name' };
+
+  // ---- STATE ----
+
+  var currentQ = 0;
+  var responses = {};
+  var scores = {};
+  var bands = {};
+  var selectedHeadline = '';
+  var hasSubmitted = false;
+  var transitioning = false;
+
+  // ---- DOM REFS ----
+
+  var elProgressBar = document.getElementById('progressBar');
+  var elProgressNum = document.getElementById('progressNum');
+  var elProgressDimLabel = document.getElementById('progressDimLabel');
+  var elPips = document.getElementById('pipsContainer');
+  var elNoToken = document.getElementById('no-token');
+  var elIntro = document.getElementById('intro');
+  var elQuestions = document.getElementById('questions');
+  var elLoading = document.getElementById('loading');
+  var elResults = document.getElementById('results');
+  var elQWrap = document.getElementById('qWrap');
+  var elQText = document.getElementById('qText');
+  var elQOptions = document.getElementById('qOptions');
+  var elBtnStart = document.getElementById('btnStart');
+  var elBtnBack = document.getElementById('btnBack');
+  var elResultsToolLabel = document.getElementById('resultsToolLabel');
+  var elResultsHeadline = document.getElementById('resultsHeadline');
+  var elChartSection = document.getElementById('chartSection');
+  var elBalancedBlock = document.getElementById('balancedBlock');
+  var elSummariesSection = document.getElementById('summariesSection');
+  var elBtnRetake = document.getElementById('btnRetake');
+
+  // Initialize language UI before any early returns.
+  applyStaticLang();
+  bindLangToggle();
+
+  // ---- TOKEN CHECK ----
+
+  if (!token) {
+    elNoToken.classList.add('active');
+    // Do not proceed with any other initialization
+    return;
+  }
+
+  // Show intro if token is valid
+  elIntro.classList.add('active');
+
+  // ---- PIPS ----
+
+  function buildPips() {
+    elPips.innerHTML = '';
+    for (var i = 0; i < 35; i++) {
+      var pip = document.createElement('span');
+      pip.className = 'pip';
+      // Gap every 5 pips (items interleaved: 5 dims x 7 rounds = groups of 5)
+      if (i > 0 && i % 5 === 0) pip.classList.add('dim-gap');
+      pip.setAttribute('data-pip', i);
+      elPips.appendChild(pip);
+    }
+  }
+
+  function updatePips() {
+    var pips = elPips.querySelectorAll('.pip');
+    for (var i = 0; i < pips.length; i++) {
+      pips[i].classList.remove('done', 'active');
+      if (i < currentQ) pips[i].classList.add('done');
+      if (i === currentQ) pips[i].classList.add('active');
+    }
+  }
+
+  // ---- PROGRESS ----
+
+  function updateProgress() {
+    var item = ITEMS[currentQ];
+    var dim = DIMENSIONS[item.dim];
+    elProgressNum.innerHTML = (currentQ + 1) + ' <span class="total">/35</span>';
+    elProgressDimLabel.textContent = S(dim.nameKey);
+    updatePips();
+  }
+
+  // ---- SECTIONS ----
+
+  function showSection(id) {
+    var sections = [elIntro, elQuestions, elLoading, elResults];
+    for (var i = 0; i < sections.length; i++) {
+      sections[i].classList.remove('active');
+    }
+    document.getElementById(id).classList.add('active');
+    elProgressBar.classList.toggle('visible', id === 'questions');
+    window.scrollTo(0, 0);
+  }
+
+  // ---- QUESTIONS ----
+
+    function lockQuestionHeight() {
+    var savedQ = currentQ;
+    var maxTextH = 0;
+
+    for (var i = 0; i < ITEMS.length; i++) {
+      elQText.textContent = S(ITEMS[i].key);
+      var h = elQText.offsetHeight;
+      if (h > maxTextH) maxTextH = h;
+    }
+
+    elQText.style.minHeight = maxTextH + 'px';
+
+    elQText.textContent = S(ITEMS[savedQ].key);
+  }
+
+  function renderOptions(selectedVal) {
+    elQOptions.innerHTML = '';
+    for (var i = 0; i < RESPONSE_OPTIONS.length; i++) {
+      var opt = RESPONSE_OPTIONS[i];
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'q-btn';
+      btn.setAttribute('role', 'radio');
+      btn.setAttribute('aria-checked', selectedVal === opt.value ? 'true' : 'false');
+      if (selectedVal === opt.value) btn.classList.add('selected');
+      btn.innerHTML = '<span class="q-btn-num">' + opt.value + '</span><span class="q-btn-label">' + S(opt.key) + '</span>';
+      btn.setAttribute('data-value', opt.value);
+      btn.addEventListener('click', handleAnswer);
+      elQOptions.appendChild(btn);
+    }
+  }
+
+  function showQuestion() {
+    var item = ITEMS[currentQ];
+    elQText.textContent = S(item.key);
+    var existing = responses[item.id] || -1;
+    renderOptions(existing);
+    updateProgress();
+
+    elBtnBack.classList.toggle('hidden', currentQ === 0);
+
+    elQWrap.classList.remove('fade-in');
+    void elQWrap.offsetWidth;
+    elQWrap.classList.add('fade-in');
+  }
+
+  function handleAnswer(e) {
+    if (transitioning) return;
+    var btn = e.currentTarget;
+    var val = parseInt(btn.getAttribute('data-value'), 10);
+    var item = ITEMS[currentQ];
+    responses[item.id] = val;
+
+    var btns = elQOptions.querySelectorAll('.q-btn');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].classList.remove('selected');
+      btns[i].setAttribute('aria-checked', 'false');
+    }
+    btn.classList.add('selected');
+    btn.setAttribute('aria-checked', 'true');
+
+    transitioning = true;
+    setTimeout(function() {
+      transitioning = false;
+      if (currentQ < ITEMS.length - 1) {
+        currentQ++;
+        showQuestion();
+      } else {
+        showSection('loading');
+        setTimeout(function() {
+          calculateScores();
+          submitResults();
+          renderResults();
+          showSection('results');
+        }, 1500);
+      }
+    }, 300);
+  }
+
+  // ---- SCORING ----
+
+  function calculateScores() {
+    scores = {};
+    bands = {};
+    for (var i = 0; i < DIM_ORDER.length; i++) {
+      var dimId = DIM_ORDER[i];
+      var dim = DIMENSIONS[dimId];
+      var total = 0;
+      for (var j = 0; j < dim.items.length; j++) {
+        var itemId = dim.items[j];
+        var raw = responses[itemId] || 0;
+        if (REVERSE_ITEMS.indexOf(itemId) !== -1) {
+          raw = 5 - raw;
+        }
+        total += raw;
+      }
+      scores[dimId] = total;
+      // 7-item range: 7-28. LOW 7-14, MODERATE 15-20, HIGH 21-28
+      if (total <= 14) bands[dimId] = 'LOW';
+      else if (total >= 21) bands[dimId] = 'HIGH';
+      else bands[dimId] = 'MODERATE';
+    }
+  }
+
+  function selectHeadline(scoresObj, bandsObj) {
+    var d1 = scoresObj.D1, d2 = scoresObj.D2, d3 = scoresObj.D3, d4 = scoresObj.D4, d5 = scoresObj.D5;
+
+    // Threshold scaled for 7-item range (was 3.0 for 3-item, now 7.0)
+    if (Math.abs(d1 - d3) >= 7.0 && d1 > d3) return 'H11';
+
+    if (bandsObj.D3 === 'LOW' && bandsObj.D4 === 'LOW') return 'H01';
+    if (bandsObj.D1 === 'HIGH' && bandsObj.D3 === 'HIGH') return 'H02';
+    if (bandsObj.D2 === 'HIGH' && bandsObj.D4 === 'LOW') return 'H03';
+    if (bandsObj.D1 === 'LOW' && bandsObj.D3 === 'LOW') return 'H04';
+    if (bandsObj.D3 === 'HIGH' && bandsObj.D4 === 'HIGH') return 'H05';
+    if (bandsObj.D2 === 'LOW' && bandsObj.D3 === 'HIGH') return 'H06';
+    if (bandsObj.D2 === 'HIGH' && bandsObj.D3 === 'LOW') return 'H07';
+    if (bandsObj.D5 === 'LOW') return 'H08';
+    if (bandsObj.D5 === 'HIGH' && bandsObj.D2 === 'LOW') return 'H09';
+    if (bandsObj.D1 === 'LOW' && bandsObj.D2 === 'HIGH') return 'H10';
+
+    var deviations = [];
+    var dims = ['D1','D2','D3','D4','D5'];
+    for (var i = 0; i < dims.length; i++) {
+      var dev = scoresObj[dims[i]] - 17.5;
+      deviations.push({ dim: dims[i], dev: dev, absDev: Math.abs(dev) });
+    }
+    deviations.sort(function(a, b) { return b.absDev - a.absDev; });
+
+    var top = deviations[0];
+    // Threshold scaled for 7-item range (was 1.0 for 3-item)
+    if (top.absDev >= 2.5) {
+      if (top.dim === 'D3' && top.dev < 0) return 'H01';
+      if (top.dim === 'D3' && top.dev > 0) return 'H05';
+      if (top.dim === 'D4' && top.dev < 0) return 'H01';
+      if (top.dim === 'D4' && top.dev > 0) return 'H05';
+      if (top.dim === 'D1' && top.dev < 0) return 'H04';
+      if (top.dim === 'D1' && top.dev > 0) return 'H02';
+      if (top.dim === 'D2' && top.dev < 0) return 'H06';
+      if (top.dim === 'D2' && top.dev > 0) return 'H07';
+      if (top.dim === 'D5' && top.dev < 0) return 'H08';
+      if (top.dim === 'D5' && top.dev > 0) return 'H09';
+    }
+
+    return 'H12';
+  }
+
+  // ---- SUBMISSION ----
+
+  function submitResults() {
+    if (hasSubmitted) return;
+    hasSubmitted = true;
+
+    var ITEM_ORDER = [
+      '1.1','1.2','1.3','1.4','1.5','1.6','1.7',
+      '2.1','2.2','2.3','2.4','2.5','2.6','2.7',
+      '3.1','3.2','3.3','3.4','3.5','3.6','3.7',
+      '4.1','4.2','4.3','4.4','4.5','4.6','4.7',
+      '5.1','5.2','5.3','5.4','5.5','5.6','5.7'
+    ];
+
+    var payload = {
+      token: token,
+      timestamp: new Date().toISOString(),
+      responses: {},
+      scores: {},
+      headline: selectedHeadline
+    };
+
+    for (var i = 0; i < ITEM_ORDER.length; i++) {
+      payload.responses[ITEM_ORDER[i]] = responses[ITEM_ORDER[i]];
+    }
+
+    for (var j = 0; j < DIM_ORDER.length; j++) {
+      var dimId = DIM_ORDER[j];
+      var raw = scores[dimId];
+      // Percentage: raw range is 7-28, mapped to 0-100
+      var pct = parseFloat((((raw - 7) / 21) * 100).toFixed(2));
+      payload.scores[dimId] = {
+        raw: raw,
+        pct: pct
+      };
+    }
+    payload.headline = selectHeadline(scores, bands);
+    fetch(WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).catch(function(err) {
+      console.error('Submission error:', err);
+    });
+  }
+
+  // ---- RESULTS ----
+
+  function renderResults() {
+    selectedHeadline = selectHeadline(scores, bands);
+    elResultsToolLabel.textContent = getToolName();
+    elResultsHeadline.textContent = S(HEADLINES[selectedHeadline]);
+
+    // Balanced block
+    elBalancedBlock.classList.toggle('visible', selectedHeadline === 'H12');
+
+    // Chart
+    renderChart();
+
+    // Summaries - show immediately, no gate
+    renderSummaries();
+    elSummariesSection.classList.add('visible');
+
+    // Stagger reveal summary cards
+    var cards = elSummariesSection.querySelectorAll('.summary-card');
+    for (var i = 0; i < cards.length; i++) {
+      (function(card, delay) {
+        setTimeout(function() {
+          card.classList.add('revealed');
+        }, delay);
+      })(cards[i], i * 50);
+    }
+  }
+
+  function renderChart() {
+    elChartSection.innerHTML = '';
+    for (var i = 0; i < DIM_ORDER.length; i++) {
+      var dimId = DIM_ORDER[i];
+      var dim = DIMENSIONS[dimId];
+      var score = scores[dimId];
+      // 7-item range: 7-28, midpoint 17.5, half-range 10.5
+      var pos = (score - 17.5) / 10.5; // -1 to +1
+      var pct = (pos + 1) / 2 * 100; // 0 to 100
+      var markerPct = Math.max(1.5, Math.min(98.5, pct));
+
+      var row = document.createElement('div');
+      row.className = 'chart-row';
+
+      var nameEl = document.createElement('div');
+      nameEl.className = 'chart-dim-name';
+      nameEl.textContent = S(dim.nameKey);
+      row.appendChild(nameEl);
+
+      var barContainer = document.createElement('div');
+      barContainer.className = 'chart-bar-container';
+
+      var track = document.createElement('div');
+      track.className = 'chart-track';
+
+      var modZone = document.createElement('div');
+      modZone.className = 'chart-moderate-zone';
+      track.appendChild(modZone);
+      barContainer.appendChild(track);
+
+      var centerLine = document.createElement('div');
+      centerLine.className = 'chart-center-line';
+      barContainer.appendChild(centerLine);
+
+      var fill = document.createElement('div');
+      fill.className = 'chart-fill';
+      var intensity = Math.min(Math.abs(pos) * 1.2, 1);
+      // Floor at 0.6 so bars are visible even on moderate/center scores
+      var fillOpacity = 0.6 + 0.4 * intensity;
+      fill.style.opacity = fillOpacity;
+      fill.style.left = '50%';
+      fill.style.width = '0%';
+      barContainer.appendChild(fill);
+
+      var marker = document.createElement('div');
+      marker.className = 'chart-marker';
+      marker.style.left = '50%';
+      barContainer.appendChild(marker);
+
+      row.appendChild(barContainer);
+
+      var labels = document.createElement('div');
+      labels.className = 'chart-labels';
+      labels.innerHTML = '<span class="chart-label">' + escHtml(S(dim.leftKey)) + '</span><span class="chart-label chart-label-right">' + escHtml(S(dim.rightKey)) + '</span>';
+      row.appendChild(labels);
+
+      elChartSection.appendChild(row);
+
+      (function(fill, marker, pct, markerPct, pos) {
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            if (pct >= 50) {
+              fill.style.left = '50%';
+              fill.style.width = (pct - 50) + '%';
+            } else {
+              fill.style.left = pct + '%';
+              fill.style.width = (50 - pct) + '%';
+            }
+            marker.style.left = markerPct + '%';
+          });
+        });
+      })(fill, marker, pct, markerPct, pos);
+    }
+  }
+
+  // ---- SUMMARIES ----
+
+  function renderSummaries() {
+    elSummariesSection.innerHTML = '';
+    for (var i = 0; i < DIM_ORDER.length; i++) {
+      var dimId = DIM_ORDER[i];
+      var dim = DIMENSIONS[dimId];
+      var band = bands[dimId];
+
+      var card = document.createElement('div');
+      card.className = 'summary-card';
+
+      var header = document.createElement('div');
+      header.className = 'summary-header';
+      header.setAttribute('tabindex', '0');
+      header.setAttribute('role', 'button');
+      header.setAttribute('aria-expanded', 'false');
+
+      var left = document.createElement('div');
+      left.className = 'summary-header-left';
+
+      var dimName = document.createElement('div');
+      dimName.className = 'summary-dim-name';
+      dimName.textContent = S(dim.nameKey);
+      left.appendChild(dimName);
+
+      var bandLabel = document.createElement('div');
+      bandLabel.className = 'summary-band-label band-' + band.toLowerCase();
+      if (band === 'LOW') {
+        bandLabel.textContent = S('bandLow') + ' (' + S(dim.leftKey) + ')';
+      } else if (band === 'HIGH') {
+        bandLabel.textContent = S('bandHigh') + ' (' + S(dim.rightKey) + ')';
+      } else {
+        bandLabel.textContent = S('bandModerate');
+      }
+      left.appendChild(bandLabel);
+
+      var chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      chevron.setAttribute('class', 'summary-chevron');
+      chevron.setAttribute('viewBox', '0 0 24 24');
+      chevron.setAttribute('fill', 'none');
+      chevron.setAttribute('stroke', 'currentColor');
+      chevron.setAttribute('stroke-width', '2');
+      chevron.setAttribute('stroke-linecap', 'round');
+      chevron.setAttribute('stroke-linejoin', 'round');
+      var path = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+      path.setAttribute('points', '6 9 12 15 18 9');
+      chevron.appendChild(path);
+
+      header.appendChild(left);
+      header.appendChild(chevron);
+
+      var body = document.createElement('div');
+      body.className = 'summary-body';
+      var copyEl = document.createElement('p');
+      copyEl.className = 'summary-copy';
+      copyEl.textContent = S(SUMMARIES[dimId][band]);
+      body.appendChild(copyEl);
+
+      card.appendChild(header);
+      card.appendChild(body);
+
+      (function(card, header) {
+        header.addEventListener('click', function() {
+          var isExpanded = card.classList.contains('expanded');
+          card.classList.toggle('expanded');
+          header.setAttribute('aria-expanded', !isExpanded ? 'true' : 'false');
+        });
+        header.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            header.click();
+          }
+        });
+      })(card, header);
+
+      elSummariesSection.appendChild(card);
+    }
+  }
+
+  // ---- SAVE PROFILE ----
+
+  document.getElementById('btnSave').addEventListener('click', function() {
+    window.print();
+  });
+
+  // ---- RETAKE ----
+
+  elBtnRetake.addEventListener('click', function() {
+    currentQ = 0;
+    responses = {};
+    scores = {};
+    bands = {};
+    selectedHeadline = '';
+    transitioning = false;
+    elSummariesSection.classList.remove('visible');
+    elBalancedBlock.classList.remove('visible');
+    elSummariesSection.innerHTML = '';
+    elChartSection.innerHTML = '';
+    showSection('intro');
+  });
+
+  // ---- I18N HELPERS / TOGGLE ----
+
+  function escHtml(s) {
+    if (s == null) return '';
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function applyStaticLang() {
+    var nodes = document.querySelectorAll('[data-i18n]');
+    for (var i = 0; i < nodes.length; i++) {
+      var key = nodes[i].getAttribute('data-i18n');
+      nodes[i].textContent = S(key);
+    }
+    // Special: the four scale-explanation list items use [data-i18n-html]
+    // because the canonical string contains a colon-prefixed label that we
+    // render in <strong>. Split on the first ':' (or full-width '\uff1a').
+    var htmlNodes = document.querySelectorAll('[data-i18n-html]');
+    for (var j = 0; j < htmlNodes.length; j++) {
+      var k = htmlNodes[j].getAttribute('data-i18n-html');
+      var raw = S(k);
+      var idx = raw.indexOf(':');
+      var idxFw = raw.indexOf('\uff1a');
+      var splitAt = -1, sep = '';
+      if (idx >= 0 && (idxFw < 0 || idx < idxFw)) { splitAt = idx; sep = ':'; }
+      else if (idxFw >= 0) { splitAt = idxFw; sep = '\uff1a'; }
+      if (splitAt > 0) {
+        htmlNodes[j].innerHTML = '<strong>' + escHtml(raw.slice(0, splitAt)) + sep + '</strong>' + escHtml(raw.slice(splitAt + 1));
+      } else {
+        htmlNodes[j].textContent = raw;
+      }
+    }
+    document.title = S('pageTitle');
+    document.documentElement.lang = (lang === 'tc') ? 'zh-Hant-HK' : 'en';
+    var btnEn = document.getElementById('langEn');
+    var btnTc = document.getElementById('langTc');
+    if (btnEn && btnTc) {
+      btnEn.classList.toggle('lang-active', lang === 'en');
+      btnTc.classList.toggle('lang-active', lang === 'tc');
+      btnEn.setAttribute('aria-pressed', lang === 'en' ? 'true' : 'false');
+      btnTc.setAttribute('aria-pressed', lang === 'tc' ? 'true' : 'false');
+    }
+    // Aria labels
+    var langGroup = document.querySelector('.lang-toggle');
+    if (langGroup) langGroup.setAttribute('aria-label', S('ariaLanguage'));
+    var qOpts = document.getElementById('qOptions');
+    if (qOpts) qOpts.setAttribute('aria-label', S('ariaSelectResponse'));
+    var btnBack = document.getElementById('btnBack');
+    if (btnBack) btnBack.setAttribute('aria-label', S('ariaPrevious'));
+  }
+
+  function rerenderActive() {
+    if (elQuestions.classList.contains('active')) {
+      // Re-measure question text height because the new language may be
+      // taller/shorter; then re-render the active item with current selection.
+      elQText.style.minHeight = '';
+      lockQuestionHeight();
+      showQuestion();
+    }
+    if (elResults.classList.contains('active')) {
+      // Reset stagger state so cards fade back in cleanly is not strictly
+      // necessary; just rebuild the chart and summaries with new strings.
+      renderResults();
+      var cards = elSummariesSection.querySelectorAll('.summary-card');
+      for (var i = 0; i < cards.length; i++) cards[i].classList.add('revealed');
+    }
+    if (elProgressBar.classList.contains('visible')) {
+      updateProgress();
+    }
+  }
+
+  function setLang(newLang) {
+    if (newLang !== 'en' && newLang !== 'tc') return;
+    if (newLang === lang) return;
+    lang = newLang;
+    applyStaticLang();
+    rerenderActive();
+  }
+
+  function bindLangToggle() {
+    var btnEn = document.getElementById('langEn');
+    var btnTc = document.getElementById('langTc');
+    if (btnEn) btnEn.addEventListener('click', function () { setLang('en'); });
+    if (btnTc) btnTc.addEventListener('click', function () { setLang('tc'); });
+  }
+
+  // ---- INIT ----
+
+  buildPips();
+
+  elBtnStart.addEventListener('click', function() {
+    showSection('questions');
+    showQuestion();
+    setTimeout(lockQuestionHeight, 50);
+  });
+
+  elBtnBack.addEventListener('click', function() {
+    if (currentQ > 0) {
+      currentQ--;
+      showQuestion();
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
